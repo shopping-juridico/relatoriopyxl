@@ -3,9 +3,11 @@ from openpyxl import load_workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
 from openpyxl.styles import Font
 from datetime import datetime
+from xls2xlsx import XLS2XLSX
 
 # carregar o arquivo fonte
-wb = load_workbook('grade-exportacao.xlsx')
+x2x = XLS2XLSX('methods/grade-exportacao.xls')
+wb = x2x.to_xlsx()
 
 # criar a variável da planilha que será manipulada
 ws = wb.worksheets[0]
