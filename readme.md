@@ -94,6 +94,11 @@ pip3 install xls2xlsx
 pip3 install pyinstaller
 ```
 
+Para congelar o ambiente com todas as bibliotecas necessárias:
+
+```
+pip freeze > requirements.txt
+```
 
 ### **2.3 Desenvolvendo**
 
@@ -124,10 +129,30 @@ Desde que o usuário tenha Python instalado no sistema:
 
 1. Descompactar a pasta;
 2. Colar dentro de "excel files" os arquivos .xlsx com dados brutos;
-3. Abrir o terminal dentro do diretório "relatorios_py-xl" e executar o comando:
+3. Abrir o terminal dentro do diretório "relatorios_py-xl" e executar os comandos:
+
+Para ativar o ambiente:
+
+Linux:
+```
+source /bin/activate
+```
+
+Windows:
+```
+.\env\Scripts\activate
+```
+
+Para executar o programa:
 
 ```
 python3 main.py
+```
+
+OBS: Se necessário, instalar as bibliotecas pelo comando:
+
+```
+pip install -r requirements.txt
 ```
 
 ### **3.2 Método arquivo executável**
