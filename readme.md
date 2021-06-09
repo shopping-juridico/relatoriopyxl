@@ -22,10 +22,13 @@ sudo apt install python3
 OBS: Nem sempre esse comando é necessário, pois na maioria das distribuições linux, Python já vem instalado.
 
 - Instalação do venv (ambiente de desenvolvimento)
+
+Linux:
 ```
 sudo apt update
 sudo apt install python3 python3-dev python3-venv
 ```
+
 
 - Instalação do pip (para instalar e gerenciar pacotes de bibliotecas python)
 
@@ -40,25 +43,39 @@ sudo apt install pip3
 
 - Configurando o venv para isolar dependências
 
+Linux:
 ```
-mkdir int-py-xl
-cd int-py-xl
-python3 -m venv env
+mkdir projetos
+cd projetos
+python3 -m venv relatorios_py-xl
 ```
+
+Windows:
+```
+cd relatorios_py-xl
+python3 -m venv relatorios_py-xl
+```
+
 OBS: a utilização de um ambiente de desenvolvimento, além de organizar melhor o projeto, isola as dependências e bibliotecas para que não haja interferência e problemas com outros pacotes do sistema.
 
 - Ativando o ambiente
 
-Fora do diretório do projeto, ou seja, em /home/projetos
+Dentro do diretório do projeto:
 
+Linux:
 ```
-source int-py-xl/bin/activate
+source /bin/activate
+```
+
+Windows:
+```
+.\env\Scripts\activate
 ```
 
 depois, para eventualmente compilar o arquivo:
 
 ```
-cd int-py-xl
+cd relatorios_py-xl
 ```
 
 ### **2.2 Bibliotecas**
@@ -69,11 +86,14 @@ cd int-py-xl
 pip3 install openpyxl
 ```
 
-- Instalação da biblioteca pandas (para manipulação de dados em planilha):
+```
+pip3 install xls2xlsx
+```
 
 ```
-pip3 install pandas
+pip3 install pyinstaller
 ```
+
 
 ### **2.3 Desenvolvendo**
 
@@ -94,19 +114,20 @@ pip3 install pandas
 
 ### **3.1 Método simples**
 
-> Compactar a pasta do projeto "int-py-xl" para o formato .zip e disponibilizar o arquivo para os outros usuários.
+> Fazer o download do arquivo .zip disponível no link: https://github.com/shopping-juridico/relatorios_py-xl. Ou executar o comando abaixo:
+
+```
+git clone https://github.com/shopping-juridico/relatorios_py-xl.git
+```
 
 Desde que o usuário tenha Python instalado no sistema:
 
 1. Descompactar a pasta;
-2. Colar dentro dela os arquivos .xlsx com dados brutos;
-3. Abrir o terminal dentro do diretório "int-py-xl" e executar o comando:
+2. Colar dentro de "excel files" os arquivos .xlsx com dados brutos;
+3. Abrir o terminal dentro do diretório "relatorios_py-xl" e executar o comando:
+
 ```
-python3 relatorio_andamentos.py
-```
-ou
-```
-python3 relatorio_suportes_tr.py
+python3 main.py
 ```
 
 ### **3.2 Método arquivo executável**
