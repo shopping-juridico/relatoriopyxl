@@ -69,4 +69,4 @@ def formata_suporte():
     #data atual
     now = datetime.now()
 
-    wb.save("/home/vitor/projetos/relatorios_py-xl/Relatório Suportes TR - {}.0{}.xlsx".format(now.day, now.month))
+    wb.save("Relatório Suportes TR - {}.0{}.xlsx".format(now.day, now.month))
