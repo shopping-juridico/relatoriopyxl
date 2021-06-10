@@ -29,7 +29,6 @@ sudo apt update
 sudo apt install python3 python3-dev python3-venv
 ```
 
-
 - Instalação do pip (para instalar e gerenciar pacotes de bibliotecas python)
 
 ```
@@ -52,15 +51,16 @@ python3 -m venv relatorios_py-xl
 
 Windows:
 ```
-cd relatorios_py-xl
-python3 -m venv relatorios_py-xl
+mkdir projetos
+cd projetos
+py -m venv relatorios_py-xl
 ```
 
 OBS: a utilização de um ambiente de desenvolvimento, além de organizar melhor o projeto, isola as dependências e bibliotecas para que não haja interferência e problemas com outros pacotes do sistema.
 
 - Ativando o ambiente
 
-Dentro do diretório do projeto:
+Dentro da pasta do projeto:
 
 Linux:
 ```
@@ -69,13 +69,7 @@ source /bin/activate
 
 Windows:
 ```
-.\env\Scripts\activate
-```
-
-depois, para eventualmente compilar o arquivo:
-
-```
-cd relatorios_py-xl
+.\Scripts\activate
 ```
 
 ### **2.2 Bibliotecas**
@@ -84,14 +78,7 @@ cd relatorios_py-xl
 
 ```
 pip3 install openpyxl
-```
-
-```
 pip3 install xls2xlsx
-```
-
-```
-pip3 install pyinstaller
 ```
 
 Para congelar o ambiente com todas as bibliotecas necessárias:
@@ -131,7 +118,19 @@ Desde que o usuário tenha Python instalado no sistema:
 2. Colar dentro de "excel files" os arquivos .xlsx com dados brutos;
 3. Abrir o terminal dentro do diretório "relatorios_py-xl" e executar os comandos:
 
-Para ativar o ambiente:
+Se necessário (em caso de portabilidade entre SO), criar novamente o ambiente virtual com o mesmo nome da pasta:
+
+Linux:
+```
+python3 -m venv relatorios_py-xl
+```
+
+Windows:
+```
+py -m venv relatorios_py-xl-****
+```
+
+Ativar o ambiente:
 
 Linux:
 ```
@@ -140,10 +139,17 @@ source /bin/activate
 
 Windows:
 ```
-.\env\Scripts\activate
+.\Scripts\activate
 ```
 
-Para executar o programa:
+Instalar as bilbiotecas necessárias:
+
+```
+pip3 install openpyxl
+pip3 install xls2xlsx
+```
+
+Executar o programa:
 
 ```
 python3 main.py
@@ -155,8 +161,17 @@ OBS: Se necessário, instalar as bibliotecas pelo comando:
 pip install -r requirements.txt
 ```
 
+Após a instalação, o programa pode ser executado sempre a partir do script.
+
 ### **3.2 Método arquivo executável**
 
+Script de instalação.
+
+Todo o procedimento de instalação descrito no item 3.1 deve ser automatizado para scripts executáveis em cada SO.
+
+Script de utilização.
+
+Para abrir o programa, basta executar um script devidamente configurado.
 
 ### **3.3 Método interface gráfica**
 
