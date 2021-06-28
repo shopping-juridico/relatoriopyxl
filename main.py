@@ -19,16 +19,16 @@ while opcao != 1 and opcao != 2 and opcao !=3 and opcao !=4:
         print("Opção inválida!")
 
 if opcao == 1:
-    print("Relatório gerado: Andamentos")
+    print("Relatório gerado na pasta 'excel files': Andamentos")
     formata_andamentos()
 if opcao == 2:
-    print("Relatório gerado: Suportes TR")
+    print("Relatório gerado na pasta 'excel files': Suportes TR")
     formata_suporte()
 if opcao == 3:
-    print("Relatório gerado: Geral")
+    print("Relatório gerado na pasta 'excel files': Geral")
     formata_geral()
 if opcao == 4:
-    print("Relatórios gerados:")
+    print("Relatórios gerados na pasta 'excel files':")
     print()
     print("Andamentos")
     print("Suportes TR")
