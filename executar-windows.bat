@@ -1,4 +1,4 @@
-cmd /k ".\Scripts\activate & py main.py"
+cmd /k ".\env\Scripts\activate & py main.py"
 
 echo.
 @pause
