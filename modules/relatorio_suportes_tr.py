@@ -1,4 +1,3 @@
-from openpyxl import Workbook
 from openpyxl import load_workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
 from openpyxl.styles import Font
