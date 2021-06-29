@@ -1,5 +1,6 @@
 from xls2xlsx import XLS2XLSX
 from openpyxl import Workbook, load_workbook
+from datetime import datetime
 
 def convert():
     x2x = XLS2XLSX("excel files/grade-exportacao.xls")
@@ -24,7 +25,7 @@ def cola_lista(lista, coluna):
         ws2.cell(row=r, column=coluna).value = cell
         r += 1
 
-def main():
+def formata_geral():
     convert()
     id = copia_lista('C')
     tipo = copia_lista('D')
@@ -40,8 +41,8 @@ def main():
     cola_lista(ultimo_andamento, 5)
     cola_lista(descricao, 6)
 
-main()
+    ws2.delete_rows(ws2.max_row)
 
-ws2.delete_rows(ws2.max_row)
+    now = datetime.now()
 
-wb2.save('excel files/relatorio geral.xlsx')
+    wb2.save('excel files/generated/relatorio geral {}.{}.xlsx'.format(now.day, now.month))

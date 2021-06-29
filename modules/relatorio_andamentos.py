@@ -41,4 +41,4 @@ def formata_andamentos():
 
     now = datetime.now()
 
-    wb.save("excel files/Relatório de Andamentos - Vitor - {}.0{}.xlsx".format(now.day, now.month))
+    wb.save("excel files/generated/Relatório de Andamentos - Vitor - {}.0{}.xlsx".format(now.day, now.month))

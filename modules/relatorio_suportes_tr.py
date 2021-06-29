@@ -68,4 +68,4 @@ def formata_suporte():
     #data atual
     now = datetime.now()
 
-    wb.save("excel files/Relatório Suportes TR - {}.0{}.xlsx".format(now.day, now.month))
+    wb.save("excel files/generated/Relatório Suportes TR - {}.0{}.xlsx".format(now.day, now.month))
