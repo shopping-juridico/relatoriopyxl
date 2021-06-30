@@ -182,6 +182,6 @@ Após a instalação, o programa pode ser executado sempre a partir do script.
 
 > Criação de um modelo de script de referência ao produzir relatórios automatizados a partir de dados brutos;
 
-> Relatório diário automaticamente formatado para visualização de ações abertas de suportes encaminhados para a Thomson Reuters;
+> Relatório diário automaticamente formatado para visualização de ações abertas de suportes encaminhados para a *Thomson Reuters*;
 
 > Relatório diário automaticamente formatado para visualização de horas trabalhadas.
