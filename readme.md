@@ -44,16 +44,16 @@ sudo apt install pip3
 
 Linux:
 ```
-mkdir projetos
-cd projetos
-python3 -m venv relatorios_py-xl
+mkdir relatorios_py-xl
+cd relatorios_py-xl
+python3 -m venv env
 ```
 
 Windows:
 ```
-mkdir projetos
-cd projetos
-py -m venv relatorios_py-xl
+mkdir relatorios_py-xl
+cd relatorios_py-xl
+py -m venv env
 ```
 
 OBS: a utilização de um ambiente de desenvolvimento, além de organizar melhor o projeto, isola as dependências e bibliotecas para que não haja interferência e problemas com outros pacotes do sistema.
@@ -64,12 +64,12 @@ Dentro da pasta do projeto:
 
 Linux:
 ```
-source /bin/activate
+source env/bin/activate
 ```
 
 Windows:
 ```
-.\Scripts\activate
+.\env\Scripts\activate
 ```
 
 ### **2.2 Bibliotecas**
@@ -104,7 +104,7 @@ pip freeze > requirements.txt
 ----------------
 ## **3. Utilização**
 
-### **3.1 Método simples**
+### **3.1 Método Manual**
 
 > Fazer o download do arquivo .zip disponível no link: https://github.com/shopping-juridico/relatorios_py-xl. Ou executar o comando abaixo:
 
@@ -115,31 +115,31 @@ git clone https://github.com/shopping-juridico/relatorios_py-xl.git
 Desde que o usuário tenha Python instalado no sistema:
 
 1. Descompactar a pasta;
-2. Colar dentro de "excel files" os arquivos .xlsx com dados brutos;
+2. Se necessário, colar dentro de "excel files" os arquivos .xlsx com dados brutos;
 3. Abrir o terminal dentro do diretório "relatorios_py-xl" e executar os comandos:
 
 Se necessário (em caso de portabilidade entre SO), criar novamente o ambiente virtual com o mesmo nome da pasta:
 
 Linux:
 ```
-python3 -m venv relatorios_py-xl
+python3 -m venv env
 ```
 
 Windows:
 ```
-py -m venv relatorios_py-xl-****
+py -m venv env
 ```
 
 Ativar o ambiente:
 
 Linux:
 ```
-source /bin/activate
+source env/bin/activate
 ```
 
 Windows:
 ```
-.\Scripts\activate
+.\env\Scripts\activate
 ```
 
 Instalar as bilbiotecas necessárias:
@@ -165,13 +165,15 @@ Após a instalação, o programa pode ser executado sempre a partir do script.
 
 ### **3.2 Método arquivo executável**
 
-Script de instalação.
+#### 3.2.1 Sistemas Linux:
 
-Todo o procedimento de instalação descrito no item 3.1 deve ser automatizado para scripts executáveis em cada SO.
+- Instalação: Dentro do diretório do projeto, executar o script 'instalação-linux.sh';
+- Utilização: Para abrir o software, executar o script 'executar-linux.sh'.
 
-Script de utilização.
+#### 3.2.2 Windows:
 
-Para abrir o programa, basta executar um script devidamente configurado.
+- Instalação: Dentro do diretório do projeto, executar o script 'instalação-windows.bat';
+- Utilização: Para abrir o software, executar o script 'executar-windows.bat'.
 
 ### **3.3 Método interface gráfica**
 
