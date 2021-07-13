@@ -1,5 +1,5 @@
 from modules.relatorio_suportes_tr import formata_suporte
-from modules.relatorio_andamentos import formata_andamentos
+from modules.relatorio_andamento import formata_andamentos
 from modules.relatorio_geral import formata_geral
 
 print("-----------------------------------------------------")
