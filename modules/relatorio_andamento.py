@@ -86,4 +86,4 @@ def formata_andamentos():
 
     wb2.save('excel files/generated/Relatório de Andamentos - Vitor - {}.{}.xlsx'.format(now.day, now.month))
 
-formata_andamentos()
+#formata_andamentos()
