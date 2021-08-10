@@ -3,6 +3,7 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
 from openpyxl.styles import Font
 from datetime import datetime
+import os
 
 def convert():
     x2x = XLS2XLSX("excel files/grade-exportacao.xls")
@@ -84,6 +85,6 @@ def formata_andamentos():
 
     now = datetime.now()
 
-    wb2.save('excel files/generated/Relatório de Andamentos - Vitor - {}.{}.xlsx'.format(now.day, now.month))
+    wb2.save('excel files/Relatório de Andamentos - Vitor - {}.{}.xlsx'.format(now.day, now.month))
 
-#formata_andamentos()
+    os.remove("excel files/convertido-andamentos.xlsx")

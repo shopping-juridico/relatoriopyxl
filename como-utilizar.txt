@@ -1,0 +1,12 @@
+1. Primeiro uso?
+
+- Se sim, realize a instalação: Na pasta 'install' execute o script (clique duas vezes) 'instalação-windows';
+
+- Se não, passe para a etapa seguinte.
+
+2. Utilizando
+
+- Na pasta 'excel files' insira o arquivo 'grade-exportacao' que deseja formatar;
+- Execute o script (clique duas vezes) 'executar-windows';
+- Siga as instruções na tela;
+- O arquivo formatado foi gerado na pasta 'excel files'.

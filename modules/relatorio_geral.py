@@ -1,6 +1,7 @@
 from xls2xlsx import XLS2XLSX
 from openpyxl import Workbook, load_workbook
 from datetime import datetime
+import os
 
 def convert():
     x2x = XLS2XLSX("excel files/grade-exportacao.xls")
@@ -45,4 +46,6 @@ def formata_geral():
 
     now = datetime.now()
 
-    wb2.save('excel files/generated/relatorio geral {}.{}.xlsx'.format(now.day, now.month))
+    wb2.save('excel files/Suportes Geral {}.{}.xlsx'.format(now.day, now.month))
+
+    os.remove("excel files/convertido-geral.xlsx")

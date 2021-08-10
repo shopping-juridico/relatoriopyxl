@@ -4,6 +4,3 @@ echo.
 @pause
 
 cmd /k cd C:\Users\vitor\Desktop\relatorios_py-xl-win-version\
-
-
-
