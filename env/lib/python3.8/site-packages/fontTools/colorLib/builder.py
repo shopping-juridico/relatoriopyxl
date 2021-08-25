@@ -21,25 +21,16 @@ from typing import (
     TypeVar,
     Union,
 )
+from fontTools.misc.arrayTools import intRect
 from fontTools.misc.fixedTools import fixedToFloat
 from fontTools.ttLib.tables import C_O_L_R_
 from fontTools.ttLib.tables import C_P_A_L_
 from fontTools.ttLib.tables import _n_a_m_e
 from fontTools.ttLib.tables import otTables as ot
-from fontTools.ttLib.tables.otTables import (
-    ExtendMode,
-    CompositeMode,
-    VariableValue,
-    VariableFloat,
-    VariableInt,
-)
+from fontTools.ttLib.tables.otTables import ExtendMode, CompositeMode
 from .errors import ColorLibError
 from .geometry import round_start_circle_stable_containment
-from .table_builder import (
-    convertTupleClass,
-    BuildCallback,
-    TableBuilder,
-)
+from .table_builder import BuildCallback, TableBuilder
 
 
 # TODO move type aliases to colorLib.types?
@@ -49,56 +40,54 @@ _PaintInput = Union[int, _Kwargs, ot.Paint, Tuple[str, "_PaintInput"]]
 _PaintInputList = Sequence[_PaintInput]
 _ColorGlyphsDict = Dict[str, Union[_PaintInputList, _PaintInput]]
 _ColorGlyphsV0Dict = Dict[str, Sequence[Tuple[str, int]]]
+_ClipBoxInput = Union[
+    Tuple[int, int, int, int, int],  # format 1, variable
+    Tuple[int, int, int, int],  # format 0, non-variable
+    ot.ClipBox,
+]
 
 
 MAX_PAINT_COLR_LAYER_COUNT = 255
-_DEFAULT_ALPHA = VariableFloat(1.0)
+_DEFAULT_ALPHA = 1.0
 _MAX_REUSE_LEN = 32
 
 
-def _beforeBuildPaintVarRadialGradient(paint, source, srcMapFn=lambda v: v):
-    # normalize input types (which may or may not specify a varIdx)
-    x0 = convertTupleClass(VariableFloat, source["x0"])
-    y0 = convertTupleClass(VariableFloat, source["y0"])
-    r0 = convertTupleClass(VariableFloat, source["r0"])
-    x1 = convertTupleClass(VariableFloat, source["x1"])
-    y1 = convertTupleClass(VariableFloat, source["y1"])
-    r1 = convertTupleClass(VariableFloat, source["r1"])
+def _beforeBuildPaintRadialGradient(paint, source):
+    x0 = source["x0"]
+    y0 = source["y0"]
+    r0 = source["r0"]
+    x1 = source["x1"]
+    y1 = source["y1"]
+    r1 = source["r1"]
 
     # TODO apparently no builder_test confirms this works (?)
 
     # avoid abrupt change after rounding when c0 is near c1's perimeter
-    c = round_start_circle_stable_containment(
-        (x0.value, y0.value), r0.value, (x1.value, y1.value), r1.value
-    )
-    x0, y0 = x0._replace(value=c.centre[0]), y0._replace(value=c.centre[1])
-    r0 = r0._replace(value=c.radius)
+    c = round_start_circle_stable_containment((x0, y0), r0, (x1, y1), r1)
+    x0, y0 = c.centre
+    r0 = c.radius
 
     # update source to ensure paint is built with corrected values
-    source["x0"] = srcMapFn(x0)
-    source["y0"] = srcMapFn(y0)
-    source["r0"] = srcMapFn(r0)
-    source["x1"] = srcMapFn(x1)
-    source["y1"] = srcMapFn(y1)
-    source["r1"] = srcMapFn(r1)
+    source["x0"] = x0
+    source["y0"] = y0
+    source["r0"] = r0
+    source["x1"] = x1
+    source["y1"] = y1
+    source["r1"] = r1
 
     return paint, source
 
 
-def _beforeBuildPaintRadialGradient(paint, source):
-    return _beforeBuildPaintVarRadialGradient(paint, source, lambda v: v.value)
+def _defaultColorStop():
+    colorStop = ot.ColorStop()
+    colorStop.Alpha = _DEFAULT_ALPHA
+    return colorStop
 
 
-def _defaultColorIndex():
-    colorIndex = ot.ColorIndex()
-    colorIndex.Alpha = _DEFAULT_ALPHA.value
-    return colorIndex
-
-
-def _defaultVarColorIndex():
-    colorIndex = ot.VarColorIndex()
-    colorIndex.Alpha = _DEFAULT_ALPHA
-    return colorIndex
+def _defaultVarColorStop():
+    colorStop = ot.VarColorStop()
+    colorStop.Alpha = _DEFAULT_ALPHA
+    return colorStop
 
 
 def _defaultColorLine():
@@ -113,6 +102,12 @@ def _defaultVarColorLine():
     return colorLine
 
 
+def _defaultPaintSolid():
+    paint = ot.Paint()
+    paint.Alpha = _DEFAULT_ALPHA
+    return paint
+
+
 def _buildPaintCallbacks():
     return {
         (
@@ -124,11 +119,21 @@ def _buildPaintCallbacks():
             BuildCallback.BEFORE_BUILD,
             ot.Paint,
             ot.PaintFormat.PaintVarRadialGradient,
-        ): _beforeBuildPaintVarRadialGradient,
-        (BuildCallback.CREATE_DEFAULT, ot.ColorIndex): _defaultColorIndex,
-        (BuildCallback.CREATE_DEFAULT, ot.VarColorIndex): _defaultVarColorIndex,
+        ): _beforeBuildPaintRadialGradient,
+        (BuildCallback.CREATE_DEFAULT, ot.ColorStop): _defaultColorStop,
+        (BuildCallback.CREATE_DEFAULT, ot.VarColorStop): _defaultVarColorStop,
         (BuildCallback.CREATE_DEFAULT, ot.ColorLine): _defaultColorLine,
         (BuildCallback.CREATE_DEFAULT, ot.VarColorLine): _defaultVarColorLine,
+        (
+            BuildCallback.CREATE_DEFAULT,
+            ot.Paint,
+            ot.PaintFormat.PaintSolid,
+        ): _defaultPaintSolid,
+        (
+            BuildCallback.CREATE_DEFAULT,
+            ot.Paint,
+            ot.PaintFormat.PaintVarSolid,
+        ): _defaultPaintSolid,
     }
 
 
@@ -183,6 +188,8 @@ def buildCOLR(
     version: Optional[int] = None,
     glyphMap: Optional[Mapping[str, int]] = None,
     varStore: Optional[ot.VarStore] = None,
+    varIndexMap: Optional[ot.DeltaSetIndexMap] = None,
+    clipBoxes: Optional[Dict[str, _ClipBoxInput]] = None,
 ) -> C_O_L_R_.table_C_O_L_R_:
     """Build COLR table from color layers mapping.
     Args:
@@ -196,6 +203,9 @@ def buildCOLR(
         glyphMap: a map from glyph names to glyph indices, as returned from
             TTFont.getReverseGlyphMap(), to optionally sort base records by GID.
         varStore: Optional ItemVarationStore for deltas associated with v1 layer.
+        varIndexMap: Optional DeltaSetIndexMap for deltas associated with v1 layer.
+        clipBoxes: Optional map of base glyph name to clip box 4- or 5-tuples:
+            (xMin, yMin, xMax, yMax) or (xMin, yMin, xMax, yMax, varIndexBase).
     Return:
         A new COLR table.
     """
@@ -218,7 +228,7 @@ def buildCOLR(
 
     populateCOLRv0(colr, colorGlyphsV0, glyphMap)
 
-    colr.LayerV1List, colr.BaseGlyphV1List = buildColrV1(colorGlyphsV1, glyphMap)
+    colr.LayerList, colr.BaseGlyphList = buildColrV1(colorGlyphsV1, glyphMap)
 
     if version is None:
         version = 1 if (varStore or colorGlyphsV1) else 0
@@ -229,10 +239,36 @@ def buildCOLR(
     if version == 0:
         self.ColorLayers = self._decompileColorLayersV0(colr)
     else:
+        clipBoxes = {
+            name: clipBoxes[name] for name in clipBoxes or {} if name in colorGlyphsV1
+        }
+        colr.ClipList = buildClipList(clipBoxes) if clipBoxes else None
+        colr.VarIndexMap = varIndexMap
         colr.VarStore = varStore
         self.table = colr
 
     return self
+
+
+def buildClipList(clipBoxes: Dict[str, _ClipBoxInput]) -> ot.ClipList:
+    clipList = ot.ClipList()
+    clipList.Format = 1
+    clipList.clips = {name: buildClipBox(box) for name, box in clipBoxes.items()}
+    return clipList
+
+
+def buildClipBox(clipBox: _ClipBoxInput) -> ot.ClipBox:
+    if isinstance(clipBox, ot.ClipBox):
+        return clipBox
+    n = len(clipBox)
+    clip = ot.ClipBox()
+    if n not in (4, 5):
+        raise ValueError(f"Invalid ClipBox: expected 4 or 5 values, found {n}")
+    clip.xMin, clip.yMin, clip.xMax, clip.yMax = intRect(clipBox[:4])
+    clip.Format = int(n == 5) + 1
+    if n == 5:
+        clip.VarIndexBase = int(clipBox[4])
+    return clip
 
 
 class ColorPaletteType(enum.IntFlag):
@@ -404,7 +440,7 @@ def _reuse_ranges(num_layers: int) -> Generator[Tuple[int, int], None, None]:
             yield (lbound, ubound)
 
 
-class LayerV1ListBuilder:
+class LayerListBuilder:
     slices: List[ot.Paint]
     layers: List[ot.Paint]
     reusePool: Mapping[Tuple[Any, ...], int]
@@ -536,19 +572,19 @@ class LayerV1ListBuilder:
     def buildPaint(self, paint: _PaintInput) -> ot.Paint:
         return self.tableBuilder.build(ot.Paint, paint)
 
-    def build(self) -> Optional[ot.LayerV1List]:
+    def build(self) -> Optional[ot.LayerList]:
         if not self.layers:
             return None
-        layers = ot.LayerV1List()
+        layers = ot.LayerList()
         layers.LayerCount = len(self.layers)
         layers.Paint = self.layers
         return layers
 
 
-def buildBaseGlyphV1Record(
-    baseGlyph: str, layerBuilder: LayerV1ListBuilder, paint: _PaintInput
-) -> ot.BaseGlyphV1List:
-    self = ot.BaseGlyphV1Record()
+def buildBaseGlyphPaintRecord(
+    baseGlyph: str, layerBuilder: LayerListBuilder, paint: _PaintInput
+) -> ot.BaseGlyphList:
+    self = ot.BaseGlyphPaintRecord()
     self.BaseGlyph = baseGlyph
     self.Paint = layerBuilder.buildPaint(paint)
     return self
@@ -564,7 +600,7 @@ def _format_glyph_errors(errors: Mapping[str, Exception]) -> str:
 def buildColrV1(
     colorGlyphs: _ColorGlyphsDict,
     glyphMap: Optional[Mapping[str, int]] = None,
-) -> Tuple[Optional[ot.LayerV1List], ot.BaseGlyphV1List]:
+) -> Tuple[Optional[ot.LayerList], ot.BaseGlyphList]:
     if glyphMap is not None:
         colorGlyphItems = sorted(
             colorGlyphs.items(), key=lambda item: glyphMap[item[0]]
@@ -574,24 +610,24 @@ def buildColrV1(
 
     errors = {}
     baseGlyphs = []
-    layerBuilder = LayerV1ListBuilder()
+    layerBuilder = LayerListBuilder()
     for baseGlyph, paint in colorGlyphItems:
         try:
-            baseGlyphs.append(buildBaseGlyphV1Record(baseGlyph, layerBuilder, paint))
+            baseGlyphs.append(buildBaseGlyphPaintRecord(baseGlyph, layerBuilder, paint))
 
         except (ColorLibError, OverflowError, ValueError, TypeError) as e:
             errors[baseGlyph] = e
 
     if errors:
         failed_glyphs = _format_glyph_errors(errors)
-        exc = ColorLibError(f"Failed to build BaseGlyphV1List:\n{failed_glyphs}")
+        exc = ColorLibError(f"Failed to build BaseGlyphList:\n{failed_glyphs}")
         exc.errors = errors
         raise exc from next(iter(errors.values()))
 
     layers = layerBuilder.build()
-    glyphs = ot.BaseGlyphV1List()
+    glyphs = ot.BaseGlyphList()
     glyphs.BaseGlyphCount = len(baseGlyphs)
-    glyphs.BaseGlyphV1Record = baseGlyphs
+    glyphs.BaseGlyphPaintRecord = baseGlyphs
     return (layers, glyphs)
 
 
