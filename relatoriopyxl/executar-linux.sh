@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../env/bin/activate
+source ../../env/bin/activate
 python3 main.py
 
 $SHELL
