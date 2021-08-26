@@ -4,11 +4,13 @@ cd ..
 
 cd ..
 
+cd ..
+
 python3 -m venv env
 
 source env/bin/activate
 
-cd relatorios_py-xl
+cd relatoriopyxl/relatoriospyxl
 
 mkdir 'excel files'
 
